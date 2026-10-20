@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Цифровая повседневность студента</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: одна колонка, как переписка: шапка, лента тем с мини-графиком, интервью в «пузырях», блок применения */
+:root{
+  --bg:#EDF1F4; --surface:#FFFFFF; --ink:#101C26; --muted:#56646F; --line:#D2DAE0;
+  --accent:#2447D8; --accent-soft:#DCE4FF; --accent-ink:#FFFFFF; --warn:#B4531A;
+  --font-display:'Unbounded','Arial Black',sans-serif;
+  --font-body:'Golos Text','Segoe UI',Arial,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E151B; --surface:#17212A; --ink:#E7EDF2; --muted:#98A6B2; --line:#2A3743;
+  --accent:#8CA6FF; --accent-soft:#1F2C55; --accent-ink:#0E151B; --warn:#E59A68; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E151B; --surface:#17212A; --ink:#E7EDF2; --muted:#98A6B2; --line:#2A3743;
+  --accent:#8CA6FF; --accent-soft:#1F2C55; --accent-ink:#0E151B; --warn:#E59A68; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55;
+  padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:var(--font-display);font-weight:700;line-height:1.2;text-wrap:balance;margin:0}
+h1{font-size:clamp(1.5rem,6vw,2.1rem)}
+h2{font-size:1.15rem}
+h3{font-size:.95rem}
+p{margin:0}
+.tag{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lead{color:var(--muted);max-width:60ch}
+header{display:flex;flex-direction:column;gap:14px}
+.rq{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.rq b{display:block;font-family:var(--font-mono);font-weight:500;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+section{display:flex;flex-direction:column;gap:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:.88rem;padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip:focus-visible,.btn:focus-visible,summary:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:16px}
+.panel .q{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.q div{min-width:0;border-top:1px solid var(--line);padding-top:10px}
+.q span{display:block;font-family:var(--font-mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.q p{font-size:.92rem}
+.bars{display:flex;flex-direction:column;gap:12px}
+.bar{display:grid;grid-template-columns:minmax(0,1fr) 3.2rem;gap:4px 10px;align-items:center}
+.bar label{grid-column:1/-1;font-size:.9rem}
+.track{height:12px;border-radius:6px;background:var(--accent-soft);overflow:hidden}
+.fill{height:100%;background:var(--accent);border-radius:6px;transition:width .25s}
+.val{font-family:var(--font-mono);font-size:.85rem;text-align:right;font-variant-numeric:tabular-nums}
+.bar input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--accent);margin:0}
+.note{font-size:.82rem;color:var(--warn)}
+.btn{font:inherit;font-size:.88rem;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;align-self:flex-start}
+.chat{display:flex;flex-direction:column;gap:10px}
+.bubble{max-width:88%;padding:12px 14px;border-radius:16px;font-size:.95rem}
+.bubble small{display:block;font-family:var(--font-mono);font-size:.7rem;letter-spacing:.06em;margin-bottom:3px;opacity:.75}
+.bubble.ask{background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px;align-self:flex-start}
+.bubble.ans{background:var(--accent);color:var(--accent-ink);border-bottom-right-radius:4px;align-self:flex-end}
+details{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+summary{cursor:pointer;font-weight:600}
+details p,details ul{margin-top:8px;color:var(--muted);font-size:.92rem}
+details ul{padding-left:1.1rem}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.apply{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.apply ul{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:6px}
+.src{font-size:.9rem;color:var(--muted);display:flex;flex-direction:column;gap:6px;padding-left:1.1rem;margin:0}
+@media (max-width:520px){.panel .q{grid-template-columns:1fr}.bubble{max-width:96%}}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+
+.src-line{font-size:.8rem;color:var(--muted)}
+.src-line a{color:var(--accent)}
+.stat{display:flex;flex-direction:column;gap:2px}
+.quote{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.quote blockquote{margin:0;font-size:.95rem}
+.quote cite{font-style:normal;font-size:.82rem;color:var(--muted)}
+.who{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+</style>
+
+</head><body>
+<main>
+<header>
+  <span class="tag">Культура личности и общества · Цифровая повседневность</span>
+  <h1>Цифровая повседневность студента: среда учёбы и коммуникации</h1>
+  <p class="lead">Мини-дайджест: официальные опросы ВЦИОМ по цифровой теме, мнения экспертов и выводы для учёбы. Все цифры взяты из опубликованных источников; у каждого указаны дата, выборка и ссылка.</p>
+  <div class="rq"><b>Исследовательский вопрос</b>Как студенты используют цифровые каналы в учёбе и общении и как это влияет на их коммуникативные практики и самопрезентацию?</div>
+</header>
+
+<section aria-labelledby="t-topics">
+  <h2 id="t-topics">Официальные опросы ВЦИОМ</h2>
+  <div class="chips" id="chips" role="group" aria-label="Выбор опроса"></div>
+  <div class="panel" id="panel"></div>
+</section>
+
+<section aria-labelledby="t-int">
+  <h2 id="t-int">Мнения экспертов</h2>
+  <p class="lead">Публичные высказывания исследователей, которые занимаются поколениями, молодёжью и цифровой средой.</p>
+  <div class="chat" id="chat"></div>
+</section>
+
+<section aria-labelledby="t-apply">
+  <h2 id="t-apply">Как применять в учёбе и стажировках</h2>
+  <div class="tabs" id="tabs" role="group" aria-label="Для кого выводы"></div>
+  <div class="apply" id="apply"></div>
+</section>
+
+<section aria-labelledby="t-sci">
+  <h2 id="t-sci">Как читать эти данные</h2>
+  <details open>
+    <summary>Ограничения</summary>
+    <p>Опросы проведены в разные годы и на разных выборках, поэтому их цифры нельзя складывать. Общероссийские данные не равны практикам студентов конкретного вуза. Время в сети измеряется по самоотчёту. Высказывания экспертов дают интерпретацию, а не доказательство.</p>
+  </details>
+  <details>
+    <summary>Источники</summary>
+    <ul class="src" style="margin-top:8px">
+      <li>ВЦИОМ. Социальные сети и мессенджеры: вовлеченность и предпочтения. 10.08.2023.</li>
+      <li>ВЦИОМ. Нейросети и человек: начало пути. 05.04.2023.</li>
+      <li>ВЦИОМ. Искусственный интеллект в школе: добро или зло? 21.04.2025.</li>
+      <li>ВЦИОМ. Легко ли быть молодым? Индекс приоритетов молодежи. 26.08.2026.</li>
+      <li>«Поколение зумеров будет менее нервным, чем миллениалы» — профессор Вадим Радаев // Москвич Mag. 15.02.2023.</li>
+      <li>Как исследовать молодежь сегодня? Объясняет социолог Елена Омельченко // НИУ ВШЭ в Санкт-Петербурге. 06.04.2022.</li>
+      <li>Bennett S., Maton K., Kervin L. The «digital natives» debate // BJET. 2008. Vol. 39, № 5. P. 775–786.</li>
+    </ul>
+  </details>
+</section>
+</main>
+
+<script>
+var U='https://wciom.ru/analytical-reviews/analiticheskii-obzor/';
+var TOPICS=[
+ {n:'Соцсети и мессенджеры',s:'Ежедневное пользование',src:'ВЦИОМ-Онлайн, 22–24 июля 2023, 1600 россиян 18+',url:U+'socialnye-seti-i-messendzhery-vovlechennost-i-predpochtenija',
+  note:'Минуты в день: 18–24 года — 493, все регулярные пользователи — 272. Опрос измеряет время, а не качество учёбы.',
+  bars:[['18–24 года, ежедневно',92,'92%',100],['25–34 года, ежедневно',94,'94%',100],['Все пользователи, ежедневно',86,'86%',100]]},
+ {n:'Нейросети в учёбе',s:'Для чего используют нейросети',src:'ВЦИОМ-Спутник, 2 апреля 2023, 1600 россиян 18+',url:U+'neiroseti-i-chelovek-nachalo-puti',
+  note:'Доли от всех опрошенных в группе. Данные 2023 года: сегодня доли могут быть выше.',
+  bars:[['Учёба и проектные работы, 18–24 года',11,'11%',50],['Учёба и проектные работы, все',4,'4%',50],['Генерация текстов, 18–24 года',17,'17%',50],['Генерация текстов, все',5,'5%',50]]},
+ {n:'ИИ и знания',s:'ИИ в школьном обучении',src:'ВЦИОМ-Спутник, 31 марта 2025, 1600 россиян 18+',url:U+'iskusstvennyi-intellekt-v-shkole-dobro-ili-zlo',
+  note:'Опрошены взрослые, а не школьники и студенты; это оценки общества.',
+  bars:[['Ухудшает качество знаний',46,'46%',60],['Улучшает качество знаний',24,'24%',60],['Главный риск: снижение умственной нагрузки',36,'36%',60],['Главный риск: нехватка живого общения',31,'31%',60]]},
+ {n:'Приоритеты молодёжи',s:'Молодёжь 14–35 лет, 2026',src:'ВЦИОМ, онлайн-опрос 6–9 мая 2026, 1207 человек 14–35 лет',url:U+'legko-li-byt-molodym-indeks-prioritetov-molodezhi',
+  note:'Индексы по парным сравнениям (шкала 0–9), не проценты. Доля высоких оценок шансов на образование в ближайшие 1–2 года: все — 38%, 14–17 лет — 69%, 18–24 года — 28%.',
+  bars:[['Финансовая независимость, 18–24 года',5.4,'5,4',9],['Здоровье, 18–24 года',5.2,'5,2',9],['Карьера и профессиональный рост, 18–24 года',4.7,'4,7',9]]}
+];
+var EXP=[
+ {w:'В. В. Радаев, НИУ ВШЭ',q:'«Смартфоны, которые позволили всегда иметь доступ в интернет». «Зумеры первые, кто был массово вовлечен в онлайн-образование с первых лет». «Параллельно с лекцией или семинаром они сидят в смартфоне, что-то смотрят и отвечают на сообщения».',c:'Москвич Mag, 15.02.2023 (интервью в редакции издания)'},
+ {w:'Е. Л. Омельченко, Центр молодежных исследований НИУ ВШЭ',q:'Понятие поколений «является еще одной призмой для исследования молодежи». «Несмотря на стремительно развивающееся digital-пространство, зумеры чаще встречаются с друзьями лично».',c:'НИУ ВШЭ в Санкт-Петербурге, 06.04.2022 (изложение лекции)'},
+ {w:'С. Беннетт, К. Матон, Л. Кервин',q:'Нет данных, что многозадачность — новое явление, присущее только «цифровым аборигенам»; она может приводить к потере концентрации и когнитивной перегрузке (BJET, 2008, p. 779).',c:'Обзор исследований, 2008 (пересказ)'}
+];
+var cur=0;
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function drawChips(){
+  var h='';TOPICS.forEach(function(t,i){h+='<button type="button" class="chip" data-i="'+i+'" aria-pressed="'+(i===cur)+'">'+esc(t.n)+'</button>'});
+  document.getElementById('chips').innerHTML=h;
+}
+function drawPanel(){
+  var t=TOPICS[cur],h='<h3>'+esc(t.s)+'</h3><div class="bars">';
+  t.bars.forEach(function(b){var w=Math.round(b[1]/b[3]*100);
+    h+='<div class="bar"><span style="grid-column:1/-1;font-size:.9rem">'+esc(b[0])+'</span><div class="track" role="img" aria-label="'+esc(b[0])+': '+esc(b[2])+'"><div class="fill" style="width:'+w+'%"></div></div><span class="val">'+esc(b[2])+'</span></div>'});
+  h+='</div><p class="note">'+esc(t.note)+'</p><p class="src-line">'+esc(t.src)+'. <a href="'+t.url+'" target="_blank" rel="noopener">Источник</a></p>';
+  document.getElementById('panel').innerHTML=h;
+}
+function drawChat(){
+  var h='';EXP.forEach(function(e){h+='<div class="quote"><span class="who">'+esc(e.w)+'</span><blockquote>'+esc(e.q)+'</blockquote><cite>'+esc(e.c)+'</cite></div>'});
+  document.getElementById('chat').innerHTML=h;
+}
+var AP={
+ 'Студенту':['Соберите портфолио: проекты, курсовые, участие в олимпиадах.','Отделите каналы: чат группы для вопросов, почта для официального общения.','Настройте уведомления: отключите всё, кроме дедлайнов.','Ищите стажировки на 2-3 площадках и ведите профиль в профессиональной сети.'],
+ 'Вузу':['Единая точка для расписания и заданий вместо россыпи чатов.','Правила: сроки ответа преподавателей и каналы для срочных вопросов.','Мобильная версия учебной платформы.'],
+ 'Работодателю':['Чёткие задачи и сроки стажёру в одном канале.','Гибкий формат: гибридный или удалённый.','Обратная связь по расписанию, а не по настроению.']
+};
+var sel='Студенту';
+function drawTabs(){
+  var h='';Object.keys(AP).forEach(function(k){h+='<button type="button" class="chip" data-k="'+k+'" aria-pressed="'+(k===sel)+'">'+k+'</button>'});
+  document.getElementById('tabs').innerHTML=h;
+  document.getElementById('apply').innerHTML='<ul>'+AP[sel].map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>';
+}
+document.getElementById('chips').addEventListener('click',function(e){var b=e.target.closest('.chip');if(!b)return;cur=+b.dataset.i;drawChips();drawPanel()});
+document.getElementById('tabs').addEventListener('click',function(e){var b=e.target.closest('.chip');if(!b)return;sel=b.dataset.k;drawTabs()});
+drawChips();drawPanel();drawChat();drawTabs();
+</script>
+
+</body></html>
